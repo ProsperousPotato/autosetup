@@ -192,5 +192,6 @@ make clean install
 cd $sdir 
 
 # Completion text
+usermod -aG video storage tty audio input
 chown -R $username /home/$username/
 echo "autosetup script completed, use 'man dwm' for instructions on keyboard shortcuts and 'startx' to start a dwm session"
