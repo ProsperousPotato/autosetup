@@ -6,6 +6,7 @@ distro_like=$ID_LIKE
 # Checking if user is root and if not, tells them to use the 'su' command to become root
 if [ $UID != 0 ];then 
     echo "You are not root, run the comand 'su' before attempting to run this script"
+    exit
 fi
 
 # Uses the ID varaible in /etc/os-release for trying to detect system package manager
@@ -18,7 +19,7 @@ case $ID in
         echo "If you want to change the make.conf do it now to the one in the gentoo directory because the other one is going to be overwritten"
         echo "Pretending emerge, you have 1 minute to look over the packages before it will begin" && sleep 2
         xargs emerge -pv < $packList && sleep 60 ; echo "Time's up, installing packages for your system from $packList with emerge, this will begin in 5 seconds" && sleep 5
-        mv gentoo/make.conf /etc/portage/ ; mv gentoo/steam /etc/portage/package.use ; xargs emerge -v < $packList
+        mv -f gentoo/make.conf /etc/portage/ ; mv -f gentoo/steam /etc/portage/package.use ; xargs emerge -v < $packList
         ;;
     debian)
         packList="debian/$ID.txt"
@@ -42,7 +43,7 @@ case $ID in
         echo "Package List: $packList"
         echo "Package Manager: pacman" && sleep 2
         echo "Packages will be installed and files will be placed in directories that may overwrite original configurations"
-        echo "Installing packages for your system from $packList with pacman, this will begin in 5 seconds" && sleep 5 ; xargs pacman -Sy --needed --no-confirm < $packList
+        echo "Installing packages for your system from $packList with pacman, this will begin in 5 seconds" && sleep 5 ; xargs pacman -Sy --needed --noconfirm < $packList
         ;;
     opensuse|suse)
         packList="suse/$ID.txt"
@@ -64,7 +65,7 @@ case $ID_LIKE in
         echo "If you want to change the make.conf do it now to the one in the gentoo directory"
         echo "Pretending emerge, you have 1 minute to look over the packages before it will begin" 
         xargs emerge -pv < $packList && sleep 60 ; echo "Time's up, installing packages for your system from $packList with emerge, this will begin in 5 seconds" && sleep 5
-        mv gentoo/make.conf /etc/portage/ ; mv gentoo/steam /etc/portage/package.use ; xargs emerge -v < $packList
+        mv -f gentoo/make.conf /etc/portage/ ; mv -f gentoo/steam /etc/portage/package.use ; xargs emerge -v < $packList
         ;;
     debian|ubuntu)
         packList="debian/$ID.txt"
@@ -88,7 +89,7 @@ case $ID_LIKE in
         echo "Package List: $packList"
         echo "Package Manager: pacman" && sleep 2
         echo "Packages will be installed and files will be placed in directories that may overwrite original configurations"
-        echo "Installing packages for your system from $packList with pacman, this will begin in 5 seconds" && sleep 5 ; xargs pacman -Sy --needed --no-confirm < $packList
+        echo "Installing packages for your system from $packList with pacman, this will begin in 5 seconds" && sleep 5 ; xargs pacman -Sy --needed --noconfirm < $packList
         ;;
     opensuse|suse)
         packList="suse/$ID.txt"
@@ -111,30 +112,30 @@ cd dotfiles
 # Checking if the device has an IBM TrackPoint; if so, moves the file to /etc/X11, if not deletes it
 if [ `xinput --list | grep TPPS/2 | awk {print'$3''$4''$5'}` = TPPS/2IBMTrackPoint ]; then
     echo "You probably have a Thinkpad (or at least a trackpoint), moving trackpoint config file to xorg config directory" && sleep 2
-    mv xorg.conf.d/25-thinkpad.conf /etc/X11/xorg.conf.d/
+    mv -f xorg.conf.d/25-thinkpad.conf /etc/X11/xorg.conf.d/
 else
     rm xorg.conf.d/25-thinkpad.conf
 fi
 
 # Moving dotfiles around
 echo "Moving dotfiles to dotfile directories" && sleep 2
-mv xorg.conf.d/* /etc/X11/xorg.conf.d/
+mv -f xorg.conf.d/* /etc/X11/xorg.conf.d/
 
-mv Xresources ~/.Xresources
-mv bash_profile ~/.bash_profile
-mv bashrc ~/.bashrc
-mv gtkrc-2.0 ~/.gtkrc-2.0
-mv inputrc ~/.inputrc
-mv xinitrc ~/.xinitrc
-mv -f config ~/.config ; mv -f local ~/.local
+mv -f Xresources /home/*/.Xresources
+mv -f bash_profile /home/*/.bash_profile
+mv -f bashrc /home/*/.bashrc
+mv -f gtkrc-2.0 /home/*/.gtkrc-2.0
+mv -f inputrc /home/*/.inputrc
+mv -f xinitrc /home/*/.xinitrc
+mv -f config /home/*/.config ; mv -f local /home/*/.local
 chmod +x local/bin/*
 chmod -x local/bin/bookmarksfile
 cd .. && rm -rf dotfiles
 
-xrdb -merge ~/.Xresources
+xrdb -merge /home/*/.Xresources
 # Cloning and installing packages from github repos
 echo "cloning git repos, this will take longer depending on your internet speed" && sleep 2
-cd ~/.local/src/
+cd /home/*/.local/src/
 git clone --quiet https://github.com/ProsperousPotato/dwm
 cd dwm
 sudo make clean install
