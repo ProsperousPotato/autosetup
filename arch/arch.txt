@@ -58,7 +58,6 @@ ffmpeg
 ffmpegthumbnailer
 mediainfo
 alsa-utils
-pulseaudio
 x264
 x265
 openh264
@@ -71,15 +70,12 @@ noto-fonts-emoji
 msmtp
 cowsay
 lolcat
-fortune
 xmlto
 zathura
 sl
 scrcpy
 neofetch
 fastfetch
-7zip
-rar
 unrar
 unzip
 tar
