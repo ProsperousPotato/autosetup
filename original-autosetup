@@ -161,6 +161,8 @@ mv -f inputrc /home/$username/.inputrc
 mv -f xinitrc /home/$username/.xinitrc
 chmod +x local/bin/*
 chmod -x local/bin/bookmarksfile
+chmod +x config/lf/cleaner
+chmod +x config/lf/scope
 mv -f config /home/$username/.config ; mv -f local /home/$username/.local
 cd .. && rm -rf dotfiles
 
