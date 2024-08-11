@@ -1,0 +1,160 @@
+#!/bin/sh
+source /etc/os-release
+sdir=$(pwd)
+distro_like=$ID_LIKE
+
+# Checking if user is root and if not, tells them to use the 'su' command to become root
+if [ $UID != 0 ];then 
+    echo "You are not root, run the comand 'su' before attempting to run this script"
+fi
+
+# Uses the ID varaible in /etc/os-release for trying to detect system package manager
+case $ID in
+    gentoo)
+        packList="gentoo/$ID.txt"
+        echo "Distro: Gentoo"
+        echo "Package List: $packList"
+        echo "Package Manager: emerge" && sleep 2
+        echo "If you want to change the make.conf do it now to the one in the gentoo directory because the other one is going to be overwritten"
+        echo "Pretending emerge, you have 1 minute to look over the packages before it will begin" && sleep 2
+        xargs emerge -pv < $packList && sleep 60 ; echo "Time's up, installing packages for your system from $packList with emerge, this will begin in 5 seconds" && sleep 5
+        mv gentoo/make.conf /etc/portage/ ; mv gentoo/steam /etc/portage/package.use ; xargs emerge -v < $packList
+        ;;
+    debian)
+        packList="debian/$ID.txt"
+        echo "Distro: Debian"
+        echo "Package List: $packList"
+        echo "Package Manager: apt-get" && sleep 2
+        echo "Packages will be installed and files will be placed in directories that may overwrite original configurations"
+        echo "Installing packages for your system from $packList with apt-get, this will begin in 5 seconds" && sleep 5 ; xargs apt-get -y install < $packList
+        ;;
+    fedora|rhel)
+        packList="fedora/$ID.txt"
+        echo "Distro: Fedora"
+        echo "Package List: $packList"
+        echo "Package Manager: dnf" && sleep 2
+        echo "Packages will be installed and files will be placed in directories that may overwrite original configurations"
+        echo "Installing packages for your system from $packList with dnf, this will begin in 5 seconds" && sleep 5 ; xargs dnf -y install < $packList
+        ;;
+    arch|artix)
+        packList="arch/$ID.txt"
+        echo "Distro: Arch"
+        echo "Package List: $packList"
+        echo "Package Manager: pacman" && sleep 2
+        echo "Packages will be installed and files will be placed in directories that may overwrite original configurations"
+        echo "Installing packages for your system from $packList with pacman, this will begin in 5 seconds" && sleep 5 ; xargs pacman -Sy --needed --no-confirm < $packList
+        ;;
+    opensuse|suse)
+        packList="suse/$ID.txt"
+        echo "Distro: SUSE"
+        echo "Package List: $packList"
+        echo "Package Manager: zypper" && sleep 2
+        echo "Packages will be installed and files will be placed in directories that may overwrite original configurations"
+        echo "Installing packages for your system from $packList with zypper, this will begin in 5 seconds" && sleep 5 ; xargs zypper install -l -y < $packList
+        ;;
+esac
+
+# Uses ID_LIKE variable in os_release to try to determine package manager to use.
+case $ID_LIKE in 
+    gentoo)
+        packList="gentoo/$ID.txt"
+        echo "Distro: $distro_like"
+        echo "Package List: $packList"
+        echo "Package Manager: emerge" && sleep 2
+        echo "If you want to change the make.conf do it now to the one in the gentoo directory"
+        echo "Pretending emerge, you have 1 minute to look over the packages before it will begin" 
+        xargs emerge -pv < $packList && sleep 60 ; echo "Time's up, installing packages for your system from $packList with emerge, this will begin in 5 seconds" && sleep 5
+        mv gentoo/make.conf /etc/portage/ ; mv gentoo/steam /etc/portage/package.use ; xargs emerge -v < $packList
+        ;;
+    debian|ubuntu)
+        packList="debian/$ID.txt"
+        echo "Distro: $distro_like"
+        echo "Package List: $packList"
+        echo "Package Manager: apt-get" && sleep 2
+        echo "Packages will be installed and files will be placed in directories that may overwrite original configurations"
+        echo "Installing packages for your system from $packList with apt-get, this will begin in 5 seconds" && sleep 5 ; xargs apt-get -y install < $packList
+        ;;
+    fedora|rhel)
+        packList="fedora/$ID.txt"
+        echo "Distro: $distro_like"
+        echo "Package List: $packList"
+        echo "Package Manager: dnf" && sleep 2
+        echo "Packages will be installed and files will be placed in directories that may overwrite original configurations"
+        echo "Installing packages for your system from $packList with dnf, this will begin in 5 seconds" && sleep 5 ; xargs dnf -y install < $packList
+        ;;
+    arch)
+        packList="arch/$ID.txt"
+        echo "Distro: $distro_like"
+        echo "Package List: $packList"
+        echo "Package Manager: pacman" && sleep 2
+        echo "Packages will be installed and files will be placed in directories that may overwrite original configurations"
+        echo "Installing packages for your system from $packList with pacman, this will begin in 5 seconds" && sleep 5 ; xargs pacman -Sy --needed --no-confirm < $packList
+        ;;
+    opensuse|suse)
+        packList="suse/$ID.txt"
+        echo "Distro: $distro_like"
+        echo "Package List: $packList"
+        echo "Package Manager: zypper" && sleep 2
+        echo "Packages will be installed and files will be placed in directories that may overwrite original configurations"
+        echo "Installing packages for your system from $packList with zypper, this will begin in 5 seconds" && sleep 5 ; xargs zypper install -l -y < $packList
+        ;;
+esac
+
+# Making necessary directories
+echo "Making necessary directories if you dont already have them" && sleep 2
+mkdir /etc/X11/xorg.conf.d 2> /dev/null || echo "/etc/X11/xorg.conf.d directory already exists" && sleep 1
+
+# Cloning dotfiles directory
+echo "Cloning dot file directory" && sleep 1
+git clone --quiet https://github.com/ProsperousPotato/dotfiles
+cd dotfiles
+# Checking if the device has an IBM TrackPoint; if so, moves the file to /etc/X11, if not deletes it
+if [ `xinput --list | grep TPPS/2 | awk {print'$3''$4''$5'}` = TPPS/2IBMTrackPoint ]; then
+    echo "You probably have a Thinkpad (or at least a trackpoint), moving trackpoint config file to xorg config directory" && sleep 2
+    mv xorg.conf.d/25-thinkpad.conf /etc/X11/xorg.conf.d/
+else
+    rm xorg.conf.d/25-thinkpad.conf
+fi
+
+# Moving dotfiles around
+echo "Moving dotfiles to dotfile directories" && sleep 2
+mv xorg.conf.d/* /etc/X11/xorg.conf.d/
+
+mv Xresources ~/.Xresources
+mv bash_profile ~/.bash_profile
+mv bashrc ~/.bashrc
+mv gtkrc-2.0 ~/.gtkrc-2.0
+mv inputrc ~/.inputrc
+mv xinitrc ~/.xinitrc
+mv -f config ~/.config ; mv -f local ~/.local
+chmod +x local/bin/*
+chmod -x local/bin/bookmarksfile
+cd .. && rm -rf dotfiles
+
+xrdb -merge ~/.Xresources
+# Cloning and installing packages from github repos
+echo "cloning git repos, this will take longer depending on your internet speed" && sleep 2
+cd ~/.local/src/
+git clone --quiet https://github.com/ProsperousPotato/dwm
+cd dwm
+sudo make clean install
+cd ..
+git clone --quiet https://github.com/ProsperousPotato/dmenu
+cd dmenu
+sudo make clean install
+cd ..
+git clone --quiet https://github.com/ProsperousPotato/st
+cd st
+sudo make clean install
+cd ..
+git clone --quiet https://github.com/ProsperousPotato/nsxiv
+cd nsxiv
+sudo make clean install
+cd ..
+git clone --quiet https://github.com/ProsperousPotato/slstatus
+cd slstatus
+sudo make clean install
+cd $sdir 
+
+# Completion text
+echo "autosetup script completed, use 'man dwm' for instructions on keyboard shortcuts and 'startx' to start a dwm session"
