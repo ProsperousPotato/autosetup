@@ -35,7 +35,7 @@ if [ -z "$password" ]; then
 fi
 
 # Prompt for additional groups (optional)
-read -p "Enter any additional groups (not recommended, go with the defaults dude): " groups
+read -p "Enter any additional groups (not recommended, just go with the defaults dude): " groups
 
 # Create the user and their home directory
 useradd -m -s /bin/bash "$username"
@@ -45,9 +45,9 @@ echo "$username:$password" | chpasswd
 
 # Add user to additional groups if specified
 if [ -n "$groups" ]; then
-    usermod -aG "$groups" "$username"
+    usermod -aG $groups "$username"
 else
-    usermod -aG "root tty wheel audio video input storage" "$username"
+    usermod -aG root tty wheel audio video input storage "$username"
 fi
 
 # Print out user information
@@ -55,11 +55,9 @@ echo "$username created successfully."
 echo "Username: $username"
 echo "Hopefully you remember your password"
 if [ -n "$groups" ]; then
-    echo "Groups: $groups"
-else echo "Groups: root tty wheel audio video input storage"
+    echo "Groups: $groups" && sleep 10
+else echo "Groups: root tty wheel audio video input storage" && sleep 10
 fi
-
-sleep 5
 
 # Uses the ID varaible in /etc/os-release for trying to detect system package manager
 case $ID in
@@ -223,30 +221,18 @@ xrdb -merge /home/$username/.Xresources
 # Cloning and installing packages from github repos
 echo "cloning git repos, this will take longer depending on your internet speed" && sleep 2
 cd /home/$username/.local/src/
-git clone --quiet https://github.com/ProsperousPotato/dwm
-cd dwm
-make clean install
-cd ..
-git clone --quiet https://github.com/ProsperousPotato/dmenu
-cd dmenu
-make clean install
-cd ..
-git clone --quiet https://github.com/ProsperousPotato/st
-cd st
-make clean install
-cd ..
-git clone --quiet https://github.com/ProsperousPotato/nsxiv
-cd nsxiv
-make clean install
-cd ..
-git clone --quiet https://github.com/ProsperousPotato/slstatus
-cd slstatus
-make clean install
-git clone --quiet https://github.com/ProsperousPotato/slock
-cd slock
-cp -f config.def.h config.h
-make clean install
-cd ..
+git clone --quiet https://github.com/ProsperousPotato/dwm && cd dwm && make clean install && cd ..
+
+git clone --quiet https://github.com/ProsperousPotato/dmenu && cd dmenu && make clean install && cd ..
+
+git clone --quiet https://github.com/ProsperousPotato/st && cd st && make clean install && cd ..
+
+git clone --quiet https://github.com/ProsperousPotato/nsxiv && cd nsxiv && make clean install && cd ..
+
+git clone --quiet https://github.com/ProsperousPotato/slstatus && cd slstatus && make clean install && cd ..
+
+git clone --quiet https://github.com/ProsperousPotato/slock && cd slock && cp -f config.def.h config.h && make clean install
+
 cd $sdir 
 
 # Completion text
