@@ -47,7 +47,7 @@ echo "$username:$password" | chpasswd
 if [ -n "$groups" ]; then
     usermod -aG $groups "$username"
 else
-    usermod -aG root tty wheel audio video input storage "$username"
+    usermod -aG root,tty,wheel,audio,video,input,storage "$username"
 fi
 
 # Print out user information
@@ -213,7 +213,7 @@ chmod +x local/bin/*
 chmod -x local/bin/bookmarksfile
 chmod +x config/lf/cleaner
 chmod +x config/lf/scope
-mv -f config /home/$username/.config ; mv -f local /home/$username/.local
+mv -f config /home/$username/.config ; mv -f local /home/$username/.local ; mkdir /home/$username/.local/src
 cd .. && rm -rf dotfiles
 
 xrdb -merge /home/$username/.Xresources
@@ -227,7 +227,7 @@ git clone --quiet https://github.com/ProsperousPotato/dmenu && cd dmenu && make 
 
 git clone --quiet https://github.com/ProsperousPotato/st && cd st && make clean install && cd ..
 
-git clone --quiet https://github.com/ProsperousPotato/nsxiv && cd nsxiv && make clean install && cd ..
+git clone --quiet https://github.com/ProsperousPotato/nsxiv && cd nsxiv/nsxiv && make clean install && cd ..
 
 git clone --quiet https://github.com/ProsperousPotato/slstatus && cd slstatus && make clean install && cd ..
 
