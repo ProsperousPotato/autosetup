@@ -32,6 +32,7 @@ hsetroot
 xf86-video-intel
 mesa
 lib32-mesa
+arandr
 mesa-utils
 lib32-mesa-utils
 lynx
@@ -66,6 +67,7 @@ libva
 libva-intel-driver
 harfbuzz
 scrot
+maim
 noto-fonts-emoji
 msmtp
 cowsay
