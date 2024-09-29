@@ -41,6 +41,7 @@ install_yay() {
     cd /home/$username/yay && \
     makepkg --noconfirm -si
     "
+    clear
 }
 
 check_distro() {
@@ -54,15 +55,15 @@ check_distro() {
             ;;
         debian)
             packList="debian/$ID.txt"
-            echo "Distro: Debian" ; echo "Package List: $packList" ; echo "Package Manager: apt-get" && sleep 2
+            echo "Distro: Debian" ; echo "Package List: $packList" ; echo "Package Manager: apt-get"
             read -p "Packages will be installed and files will be placed in directories that may overwrite original configuration [Press enter to continue] " continue
-            read -p "Installing packages for your system from $packList with apt-get, this will begin in 5 seconds [Press enter to continue] " continue ; xargs apt-get -y install < $packList
+            read -p "Installing packages for your system from $packList with apt-get [Press enter to continue] " continue ; xargs apt-get -y install < $packList
             ;;
         fedora|rhel)
             packList="fedora/fedora.txt"
             echo "Distro: Fedora" ; echo "Package List: $packList" ; echo "Package Manager: dnf" && sleep 2
-            read -p "Packages will be installed and files will be placed in directories that may overwrite original configuration [Press enter to continue] " continue
-            read -p "Installing packages for your system from $packList with dnf, this will begin in 5 seconds [Press enter to continue] " continue ; xargs dnf -y install < $packList
+            read -p "Packages will be installed and files will be placed in directories that may overwrite original configuration [Press enter to continue] " continue 
+            read -p "Installing packages for your system from $packList with dnf [Press enter to continue] " continue ; xargs dnf -y install < $packList
             ;;
         arch|artix)
             packList="arch/$ID.txt"
@@ -70,13 +71,13 @@ check_distro() {
             read -p "Installing yay. [Press enter to continue] " continue
             install_yay
             read -p "Packages will be installed and files will be placed in directories that may overwrite original configuration [Press enter to continue] " continue
-            read -p "Installing packages for your system from $packList with pacman, this will begin in 5 seconds [Press enter to continue] " continue ; xargs pacman -Sy --needed --noconfirm < $packList
+            read -p "Installing packages for your system from $packList with pacman [Press enter to continue] " continue ; xargs pacman -Sy --needed --noconfirm < $packList
             ;;
         opensuse|suse)
             packList="suse/suse.txt"
             echo "Distro: SUSE" ; echo "Package List: $packList" ; echo "Package Manager: zypper" && sleep 2
             read -p "Packages will be installed and files will be placed in directories that may overwrite original configuration [Press enter to continue] " continue
-            read -p "Installing packages for your system from $packList with zypper, this will begin in 5 seconds [Press enter to continue] " continue ; xargs zypper install -l -y < $packList
+            read -p "Installing packages for your system from $packList with zypper [Press enter to continue] " continue ; xargs zypper install -l -y < $packList
             ;;
         *)
             echo "Could not find your distro from ID, checking from ID_LIKE" && sleep 1
@@ -91,13 +92,13 @@ check_distro() {
                     packList="debian/$ID.txt"
                     echo "Distro: $distro_like" ; echo "Package List: $packList" ; echo "Package Manager: apt-get" && sleep 2
                     echo "Packages will be installed and files will be placed in directories that may overwrite original configurations"
-                    read -p "Installing packages for your system from $packList with apt-get, this will begin in 5 seconds [Press enter to continue] " continue ; xargs apt-get -y install < $packList
+                    read -p "Installing packages for your system from $packList with apt-get [Press enter to continue] " continue ; xargs apt-get -y install < $packList
                     ;;
                 fedora|rhel)
                     packList="fedora/$ID.txt"
                     echo "Distro: $distro_like" ; echo "Package List: $packList" ; echo "Package Manager: dnf" && sleep 2
                     echo "Packages will be installed and files will be placed in directories that may overwrite original configurations"
-                    read -p "Installing packages for your system from $packList with dnf, this will begin in 5 seconds [Press enter to continue] " continue ; xargs dnf -y install < $packList
+                    read -p "Installing packages for your system from $packList with dnf [Press enter to continue] " continue ; xargs dnf -y install < $packList
                     ;;
                 arch)
                     packList="arch/$ID.txt"
@@ -105,13 +106,13 @@ check_distro() {
                     read -p "Installing yay. [Press enter to continue] " continue
                     install_yay
                     echo "Packages will be installed and files will be placed in directories that may overwrite original configurations"
-                    read -p "Installing packages for your system from $packList with pacman, this will begin in 5 seconds [Press enter to continue] " continue ; xargs pacman -Sy --needed --noconfirm < $packList
+                    read -p "Installing packages for your system from $packList with pacman [Press enter to continue] " continue ; xargs pacman -Sy --needed --noconfirm < $packList
                     ;;
                 opensuse|suse)
                     packList="suse/$ID.txt"
                     echo "Distro: $distro_like" ; echo "Package List: $packList" ; echo "Package Manager: zypper" && sleep 2
                     echo "Packages will be installed and files will be placed in directories that may overwrite original configurations"
-                    read -p "Installing packages for your system from $packList with zypper, this will begin in 5 seconds [Press enter to continue] " continue ; xargs zypper install -l -y < $packList
+                    read -p "Installing packages for your system from $packList with zypper [Press enter to continue] " continue ; xargs zypper install -l -y < $packList
                     ;;
                 *)
                     echo "Could not find your distro from ID or ID_LIKE in /etc/os-release. Exiting." && exit 1
