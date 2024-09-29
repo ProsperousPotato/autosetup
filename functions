@@ -35,7 +35,7 @@ create_user() {
 
 install_yay() {
     git clone https://aur.archlinux.org/yay-bin.git /home/$username/yay
-    cd yay
+    cd /home/$username/yay
     makepkg -si
 }
 
