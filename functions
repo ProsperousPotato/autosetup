@@ -34,6 +34,12 @@ create_user() {
     clear
 }
 
+artix_add_arch_repos() {
+    [ "$ID" == "artix" ] && pacman -S --needed artix-archlinux-support && grep -q '# Arch' /etc/pacman.conf || {
+        echo -e "\n\n# Arch\n[extra]\n Include = /etc/pacman.d/mirrorlist-arch\n\n[multilib]\n Include = /etc/pacman.d/mirrorlist-arch" >> /etc/pacman.conf
+    } && pacman-key --populate archlinux && pacman -Sy
+}
+
 install_yay() {
     su $username -c "\
     git clone https://aur.archlinux.org/yay-bin.git /home/$username/yay && \
