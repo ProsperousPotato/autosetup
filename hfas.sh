@@ -1,6 +1,6 @@
 #!/bin/sh
-source /etc/os-release || printf "Could not find /etc/os-release" && exit 1
-source ./functions || printf "Could not find functions" && exit 1
+source /etc/os-release || { printf "Could not find /etc/os-release"; exit 1; }
+source ./functions || { printf "Could not find functions"; exit 1; }
 sdir=$(pwd)
 
 # Check if user is root
