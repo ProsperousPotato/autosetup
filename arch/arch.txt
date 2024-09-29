@@ -4,6 +4,7 @@ xorg-xbacklight
 xorg-xclipboard
 xorg-xev
 xorg-xinit
+xorg-xauth
 xorg-xinput
 xorg-xkill
 xorg-xprop
