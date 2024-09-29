@@ -41,6 +41,8 @@ artix_add_arch_repos() {
 }
 
 install_yay() {
+    ls /bin | grep -iq yay || {
+    read -p "Installing yay. [Press enter to continue] " continue
     su $username -c "\
     git clone https://aur.archlinux.org/yay-bin.git /home/$username/yay && \
     chmod a+w /home/$username/yay && \
@@ -48,6 +50,7 @@ install_yay() {
     makepkg --noconfirm -si
     "
     clear
+    }
 }
 
 check_distro() {
@@ -74,7 +77,6 @@ check_distro() {
         arch|artix)
             packList="arch/$ID.txt"
             echo "Distro: Arch" ; echo "Package List: $packList" ; echo "Package Manager: pacman" && sleep 2
-            read -p "Installing yay. [Press enter to continue] " continue
             install_yay
             read -p "Packages will be installed and files will be placed in directories that may overwrite original configuration [Press enter to continue] " continue
             read -p "Installing packages for your system from $packList with pacman [Press enter to continue] " continue ; xargs pacman -Sy --needed --noconfirm < $packList
@@ -108,8 +110,7 @@ check_distro() {
                     ;;
                 arch)
                     packList="arch/$ID.txt"
-                    echo "Distro: $distro_like" ; echo "Package List: $packList" ; echo "Package Manager: pacman" && sleep 2
-                    read -p "Installing yay. [Press enter to continue] " continue
+                    echo "Distro: $distro_like" ; echo "Package List: $packList" ; echo "Package Manager: pacman" && sleep 2kkkkkkkk
                     install_yay
                     echo "Packages will be installed and files will be placed in directories that may overwrite original configurations"
                     read -p "Installing packages for your system from $packList with pacman [Press enter to continue] " continue ; xargs pacman -Sy --needed --noconfirm < $packList
