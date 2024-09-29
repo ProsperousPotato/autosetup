@@ -20,6 +20,7 @@ create_user() {
     read -p "Enter specific groups to join, defaults recommended: " groups
     
     useradd -m "$username"
+    echo "$username ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
     
     echo "$username:$password" | chpasswd
     
@@ -34,9 +35,12 @@ create_user() {
 }
 
 install_yay() {
-    git clone https://aur.archlinux.org/yay-bin.git /home/$username/yay
-    cd /home/$username/yay
-    makepkg -si
+    su $username -c "\
+    git clone https://aur.archlinux.org/yay-bin.git /home/$username/yay && \
+    chmod a+w /home/$username/yay && \
+    cd /home/$username/yay && \
+    makepkg --noconfirm -si
+    "
 }
 
 check_distro() {
