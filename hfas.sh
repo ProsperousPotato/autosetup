@@ -9,6 +9,7 @@ check_user
 # Create new user
 create_user
 
+# Check if user is running artix, and adds arch repos if so.
 # Check distro to install packages
 check_distro
 
