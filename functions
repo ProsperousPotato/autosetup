@@ -1,0 +1,166 @@
+#!/bin/sh
+
+check_user() {
+    [ $UID -ne 0 ] && read -p "You are not root, run the comand 'su' before attempting to run this script [Enter to exit] " continue && exit 1
+}
+
+
+create_user() {
+    read -p "Enter the username: " username
+    
+    [ -z "$username" ] && echo "Username cannot be empty. Exiting." && exit 1
+    
+    id "$username" &>/dev/null && echo "$username already exists. Exiting." && exit 1
+    
+    read -sp "Enter the password: " password
+    echo
+    
+    [ -z "$password" ] && password=$(openssl rand -base64 12) && echo "No password provided. Generated random password: $password"
+    
+    read -p "Enter specific groups to join, defaults recommended: " groups
+    
+    useradd -m "$username"
+    
+    echo "$username:$password" | chpasswd
+    
+    [ -n "$groups" ] && usermod -aG $groups "$username" || usermod -aG root,tty,wheel,audio,video,input,storage "$username"
+    
+    echo "$username created successfully."
+    echo "Username: $username"
+    echo "Password: $password"
+    [ -n "$groups" ] && read -p "Groups: $groups [Enter to continue] " continue || read -p "Groups: root tty wheel audio video input storage [Enter to continue] " continue
+    
+    clear
+}
+
+install_yay() {
+    git clone https://aur.archlinux.org/yay-bin.git /home/$username/yay
+    cd yay
+    makepkg -si
+}
+
+check_distro() {
+    distro_like=$ID_LIKE
+    case $ID in
+        gentoo)
+            packList="gentoo/$ID.txt"
+            echo "Distro: Gentoo" ; echo "Package List: $packList" ; echo "Package Manager: emerge"
+            read -p "Packages will be installed and files will be placed in directories that may overwrite original configuration [Press enter to continue] " continue
+            xargs emerge -v < $packList
+            ;;
+        debian)
+            packList="debian/$ID.txt"
+            echo "Distro: Debian" ; echo "Package List: $packList" ; echo "Package Manager: apt-get" && sleep 2
+            read -p "Packages will be installed and files will be placed in directories that may overwrite original configuration [Press enter to continue] " continue
+            read -p "Installing packages for your system from $packList with apt-get, this will begin in 5 seconds [Press enter to continue] " continue ; xargs apt-get -y install < $packList
+            ;;
+        fedora|rhel)
+            packList="fedora/fedora.txt"
+            echo "Distro: Fedora" ; echo "Package List: $packList" ; echo "Package Manager: dnf" && sleep 2
+            read -p "Packages will be installed and files will be placed in directories that may overwrite original configuration [Press enter to continue] " continue
+            read -p "Installing packages for your system from $packList with dnf, this will begin in 5 seconds [Press enter to continue] " continue ; xargs dnf -y install < $packList
+            ;;
+        arch|artix)
+            packList="arch/$ID.txt"
+            echo "Distro: Arch" ; echo "Package List: $packList" ; echo "Package Manager: pacman" && sleep 2
+            read -p "Installing yay. [Press enter to continue] " continue
+            install_yay
+            read -p "Packages will be installed and files will be placed in directories that may overwrite original configuration [Press enter to continue] " continue
+            read -p "Installing packages for your system from $packList with pacman, this will begin in 5 seconds [Press enter to continue] " continue ; xargs pacman -Sy --needed --noconfirm < $packList
+            ;;
+        opensuse|suse)
+            packList="suse/suse.txt"
+            echo "Distro: SUSE" ; echo "Package List: $packList" ; echo "Package Manager: zypper" && sleep 2
+            read -p "Packages will be installed and files will be placed in directories that may overwrite original configuration [Press enter to continue] " continue
+            read -p "Installing packages for your system from $packList with zypper, this will begin in 5 seconds [Press enter to continue] " continue ; xargs zypper install -l -y < $packList
+            ;;
+        *)
+            echo "Could not find your distro from ID, checking from ID_LIKE" && sleep 1
+            case $ID_LIKE in 
+                gentoo)
+                    packList="gentoo/$ID.txt"
+                    echo "Distro: Gentoo" ; echo "Package List: $packList" ; echo "Package Manager: emerge"
+                    read -p "Packages will be installed and files will be placed in directories that may overwrite original configuration [Press enter to continue] " continue
+                    xargs emerge -v < $packList
+                    ;;
+                debian|ubuntu)
+                    packList="debian/$ID.txt"
+                    echo "Distro: $distro_like" ; echo "Package List: $packList" ; echo "Package Manager: apt-get" && sleep 2
+                    echo "Packages will be installed and files will be placed in directories that may overwrite original configurations"
+                    read -p "Installing packages for your system from $packList with apt-get, this will begin in 5 seconds [Press enter to continue] " continue ; xargs apt-get -y install < $packList
+                    ;;
+                fedora|rhel)
+                    packList="fedora/$ID.txt"
+                    echo "Distro: $distro_like" ; echo "Package List: $packList" ; echo "Package Manager: dnf" && sleep 2
+                    echo "Packages will be installed and files will be placed in directories that may overwrite original configurations"
+                    read -p "Installing packages for your system from $packList with dnf, this will begin in 5 seconds [Press enter to continue] " continue ; xargs dnf -y install < $packList
+                    ;;
+                arch)
+                    packList="arch/$ID.txt"
+                    echo "Distro: $distro_like" ; echo "Package List: $packList" ; echo "Package Manager: pacman" && sleep 2
+                    read -p "Installing yay. [Press enter to continue] " continue
+                    install_yay
+                    echo "Packages will be installed and files will be placed in directories that may overwrite original configurations"
+                    read -p "Installing packages for your system from $packList with pacman, this will begin in 5 seconds [Press enter to continue] " continue ; xargs pacman -Sy --needed --noconfirm < $packList
+                    ;;
+                opensuse|suse)
+                    packList="suse/$ID.txt"
+                    echo "Distro: $distro_like" ; echo "Package List: $packList" ; echo "Package Manager: zypper" && sleep 2
+                    echo "Packages will be installed and files will be placed in directories that may overwrite original configurations"
+                    read -p "Installing packages for your system from $packList with zypper, this will begin in 5 seconds [Press enter to continue] " continue ; xargs zypper install -l -y < $packList
+                    ;;
+                *)
+                    echo "Could not find your distro from ID or ID_LIKE in /etc/os-release. Exiting." && exit 1
+            esac
+            ;;
+    esac
+}
+
+make_xauth() {
+    XAUTH_FILE="/home/$username/.Xauthority"
+    [ -f "$XAUTH_FILE" ] && echo "Removing existing .Xauthority file..." && rm "$XAUTH_FILE"
+    echo "Creating a new .Xauthority file..."
+    touch "$XAUTH_FILE"
+    xauth add ${DISPLAY} . $(xauth -b list ${DISPLAY} | awk '{print $3}')
+    [ -s "$XAUTH_FILE" ] && read -p ".Xauthority file created and updated successfully. [Press enter to continue] " continue || echo "Failed to create the .Xauthority file." && exit 1
+}
+
+is_thinkpad() {
+    [ `xinput --list | grep TPPS/2 | awk {print'$3''$4''$5'}` == "TPPS/2IBMTrackPoint" ] && echo "You probably have a Thinkpad (or at least a trackpoint), moving trackpoint config file to xorg config directory" ; sleep 2 ; mv -f xorg.conf.d/25-thinkpad.conf /etc/X11/xorg.conf.d/ || rm xorg.conf.d/25-thinkpad.conf
+}
+
+get_dots() {
+    echo "Cloning dot file directory" && sleep 1
+    git clone --quiet https://github.com/ProsperousPotato/dotfiles
+    cd dotfiles
+    echo "Moving dotfiles to dotfile directories" && sleep 2
+    mv -f xorg.conf.d/* /etc/X11/xorg.conf.d/
+    mv -f Xresources /home/$username/.Xresources
+    mv -f bash_profile /home/$username/.bash_profile
+    mv -f bashrc /home/$username/.bashrc
+    mv -f gtkrc-2.0 /home/$username/.gtkrc-2.0
+    mv -f inputrc /home/$username/.inputrc
+    mv -f xinitrc /home/$username/.xinitrc
+    chmod +x local/bin/*
+    chmod -x local/bin/bookmarksfile
+    chmod +x config/lf/cleaner
+    chmod +x config/lf/scope
+    mv -f config /home/$username/.config ; mv -f local /home/$username/.local ; mkdir /home/$username/.local/src
+    cd .. && rm -rf dotfiles
+}
+
+get_gitrepos() {
+    echo "cloning github repos, this will take longer depending on your internet speed" && sleep 2
+    cd /home/$username/.local/src/
+    git clone --quiet https://github.com/ProsperousPotato/dwm && cd dwm && make clean install && cd ..
+    git clone --quiet https://github.com/ProsperousPotato/dmenu && cd dmenu && make clean install && cd ..
+    git clone --quiet https://github.com/ProsperousPotato/st && cd st && make clean install && cd ..
+    git clone --quiet https://github.com/ProsperousPotato/nsxiv && cd nsxiv/nsxiv && make clean install && cd ../..
+    git clone --quiet https://github.com/ProsperousPotato/slstatus && cd slstatus && make clean install && cd ..
+    git clone --quiet https://github.com/ProsperousPotato/slock && cd slock && cp -f config.def.h config.h && make clean install
+    cd $sdir 
+}
+completion() {
+    chown -R $username /home/$username/
+    echo "autosetup script completed, type 'man dwm' for instructions on keyboard shortcuts, then log in to your user and it should automagically start a dwm session"
+}
