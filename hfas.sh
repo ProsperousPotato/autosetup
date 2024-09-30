@@ -19,7 +19,7 @@ check_distro
 # make_xauth
 
 # Checking if the device has an IBM TrackPoint; if so, moves the file to /etc/X11, if not deletes it
-is_thinkpad
+# is_thinkpad
 
 # Cloning dotfiles directory
 get_dots
