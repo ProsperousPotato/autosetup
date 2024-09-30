@@ -130,12 +130,11 @@ check_distro() {
 }
 
 make_xauth() {
-    XAUTH_FILE="/home/$username/.Xauthority"
-    [ -f "$XAUTH_FILE" ] && echo "Removing existing .Xauthority file..." && rm "$XAUTH_FILE"
-    echo "Creating a new .Xauthority file..."
-    touch "$XAUTH_FILE"
-    xauth add ${DISPLAY} . $(xauth -b list ${DISPLAY} | awk '{print $3}')
-    [ -s "$XAUTH_FILE" ] && read -p ".Xauthority file created and updated successfully. [Press enter to continue] " continue || echo "Failed to create the .Xauthority file." && exit 1
+    su $username -c "\
+    cd /home/$username/ && \
+    touch ".Xauthority" && \
+    xauth add ${DISPLAY} . $(xauth -b list ${DISPLAY} | awk '{print $3}')"
+    [ -s "/home/$username/.Xauthority" ] && read -p ".Xauthority file created and updated successfully. [Press enter to continue] " continue || echo "Failed to create the .Xauthority file."
 }
 
 is_thinkpad() {
