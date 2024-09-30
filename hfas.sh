@@ -10,6 +10,8 @@ check_user
 create_user
 
 # Check if user is running artix, and adds arch repos if so.
+artix_add_arch_repos
+
 # Check distro to install packages
 check_distro
 
