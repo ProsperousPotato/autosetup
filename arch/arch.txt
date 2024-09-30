@@ -82,3 +82,4 @@ fastfetch
 unrar
 unzip
 tar
+libexif
