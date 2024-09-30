@@ -129,20 +129,9 @@ check_distro() {
     esac
 }
 
-make_xauth() {
-    su $username -c "\
-    cd /home/$username/ && \
-    touch ".Xauthority" && \
-    xauth add ${DISPLAY} . $(xauth -b list ${DISPLAY} | awk '{print $3}')"
-    [ -s "/home/$username/.Xauthority" ] && read -p ".Xauthority file created and updated successfully. [Press enter to continue] " continue || echo "Failed to create the .Xauthority file."
-}
-
-is_thinkpad() {
-    [ `xinput --list | grep TPPS/2 | awk {print'$3''$4''$5'}` == "TPPS/2IBMTrackPoint" ] && echo "You probably have a Thinkpad (or at least a trackpoint), moving trackpoint config file to xorg config directory" ; sleep 2 ; mv -f xorg.conf.d/25-thinkpad.conf /etc/X11/xorg.conf.d/ || rm xorg.conf.d/25-thinkpad.conf
-}
-
 get_dots() {
     echo "Cloning dot file directory" && sleep 1
+    cd $sdir
     git clone --quiet https://github.com/ProsperousPotato/dotfiles
     cd dotfiles
     echo "Moving dotfiles to dotfile directories" && sleep 2
@@ -162,7 +151,6 @@ get_dots() {
 }
 
 get_gitrepos() {
-    echo "cloning github repos, this will take longer depending on your internet speed" && sleep 2
     cd /home/$username/.local/src/
     git clone --quiet https://github.com/ProsperousPotato/dwm && cd dwm && make clean install && cd ..
     git clone --quiet https://github.com/ProsperousPotato/dmenu && cd dmenu && make clean install && cd ..
