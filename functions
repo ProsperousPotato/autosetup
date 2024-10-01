@@ -59,32 +59,33 @@ check_distro() {
     case $ID in
         gentoo)
             packList="gentoo/$ID.txt"
-            echo "Distro: Gentoo" ; echo "Package List: $packList" ; echo "Package Manager: emerge"
+            echo "Distro: $ID" ; echo "Package List: $packList" ; echo "Package Manager: emerge"
             read -p "Packages will be installed and files will be placed in directories that may overwrite original configuration [Press enter to continue] " continue
             xargs emerge -v < $packList
             ;;
         debian)
             packList="debian/$ID.txt"
-            echo "Distro: Debian" ; echo "Package List: $packList" ; echo "Package Manager: apt-get"
+            echo "Distro: $ID" ; echo "Package List: $packList" ; echo "Package Manager: apt-get"
             read -p "Packages will be installed and files will be placed in directories that may overwrite original configuration [Press enter to continue] " continue
             read -p "Installing packages for your system from $packList with apt-get [Press enter to continue] " continue ; xargs apt-get -y install < $packList
             ;;
         fedora|rhel)
             packList="fedora/fedora.txt"
-            echo "Distro: Fedora" ; echo "Package List: $packList" ; echo "Package Manager: dnf" && sleep 2
+            echo "Distro: $ID" ; echo "Package List: $packList" ; echo "Package Manager: dnf" && sleep 2
             read -p "Packages will be installed and files will be placed in directories that may overwrite original configuration [Press enter to continue] " continue 
             read -p "Installing packages for your system from $packList with dnf [Press enter to continue] " continue ; xargs dnf -y install < $packList
             ;;
         arch|artix)
             packList="arch/$ID.txt"
-            echo "Distro: Arch" ; echo "Package List: $packList" ; echo "Package Manager: pacman" && sleep 2
-            install_yay
+            echo "Distro: $ID" ; echo "Package List: $packList" ; echo "Package Manager: pacman" && sleep 2
+            read -p "Install yay AUR helper? " installyay
+            [ "installyay" == "y" || "Y" ] && install_yay || echo "ok"
             read -p "Packages will be installed and files will be placed in directories that may overwrite original configuration [Press enter to continue] " continue
             read -p "Installing packages for your system from $packList with pacman [Press enter to continue] " continue ; xargs pacman -Sy --needed --noconfirm < $packList
             ;;
         opensuse|suse)
             packList="suse/suse.txt"
-            echo "Distro: SUSE" ; echo "Package List: $packList" ; echo "Package Manager: zypper" && sleep 2
+            echo "Distro: $ID" ; echo "Package List: $packList" ; echo "Package Manager: zypper" && sleep 2
             read -p "Packages will be installed and files will be placed in directories that may overwrite original configuration [Press enter to continue] " continue
             read -p "Installing packages for your system from $packList with zypper [Press enter to continue] " continue ; xargs zypper install -l -y < $packList
             ;;
@@ -93,32 +94,32 @@ check_distro() {
             case $ID_LIKE in 
                 gentoo)
                     packList="gentoo/$ID.txt"
-                    echo "Distro: Gentoo" ; echo "Package List: $packList" ; echo "Package Manager: emerge"
+                    echo "Distro: $ID_LIKE" ; echo "Package List: $packList" ; echo "Package Manager: emerge"
                     read -p "Packages will be installed and files will be placed in directories that may overwrite original configuration [Press enter to continue] " continue
                     xargs emerge -v < $packList
                     ;;
                 debian|ubuntu)
                     packList="debian/$ID.txt"
-                    echo "Distro: $distro_like" ; echo "Package List: $packList" ; echo "Package Manager: apt-get" && sleep 2
+                    echo "Distro: $ID_LIKE" ; echo "Package List: $packList" ; echo "Package Manager: apt-get" && sleep 2
                     echo "Packages will be installed and files will be placed in directories that may overwrite original configurations"
                     read -p "Installing packages for your system from $packList with apt-get [Press enter to continue] " continue ; xargs apt-get -y install < $packList
                     ;;
                 fedora|rhel)
                     packList="fedora/$ID.txt"
-                    echo "Distro: $distro_like" ; echo "Package List: $packList" ; echo "Package Manager: dnf" && sleep 2
+                    echo "Distro: $ID_LIKE" ; echo "Package List: $packList" ; echo "Package Manager: dnf" && sleep 2
                     echo "Packages will be installed and files will be placed in directories that may overwrite original configurations"
                     read -p "Installing packages for your system from $packList with dnf [Press enter to continue] " continue ; xargs dnf -y install < $packList
                     ;;
                 arch)
                     packList="arch/$ID.txt"
-                    echo "Distro: $distro_like" ; echo "Package List: $packList" ; echo "Package Manager: pacman" && sleep 2kkkkkkkk
+                    echo "Distro: $ID_LIKE" ; echo "Package List: $packList" ; echo "Package Manager: pacman" && sleep 2kkkkkkkk
                     install_yay
                     echo "Packages will be installed and files will be placed in directories that may overwrite original configurations"
                     read -p "Installing packages for your system from $packList with pacman [Press enter to continue] " continue ; xargs pacman -Sy --needed --noconfirm < $packList
                     ;;
                 opensuse|suse)
                     packList="suse/$ID.txt"
-                    echo "Distro: $distro_like" ; echo "Package List: $packList" ; echo "Package Manager: zypper" && sleep 2
+                    echo "Distro: $ID_LIKE" ; echo "Package List: $packList" ; echo "Package Manager: zypper" && sleep 2
                     echo "Packages will be installed and files will be placed in directories that may overwrite original configurations"
                     read -p "Installing packages for your system from $packList with zypper [Press enter to continue] " continue ; xargs zypper install -l -y < $packList
                     ;;
