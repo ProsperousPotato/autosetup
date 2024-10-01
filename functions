@@ -78,8 +78,8 @@ check_distro() {
         arch|artix)
             packList="arch/$ID.txt"
             echo "Distro: $ID" ; echo "Package List: $packList" ; echo "Package Manager: pacman" && sleep 2
-            read -p "Install yay AUR helper? " installyay
-            [ "installyay" == "y" || "Y" ] && install_yay || echo "ok"
+            read -p "Install yay AUR helper? [Y/n]" installyay
+            [ "installyay" == "n" ] && echo "ok" || install_yay
             read -p "Packages will be installed and files will be placed in directories that may overwrite original configuration [Press enter to continue] " continue
             read -p "Installing packages for your system from $packList with pacman [Press enter to continue] " continue ; xargs pacman -Sy --needed --noconfirm < $packList
             ;;
