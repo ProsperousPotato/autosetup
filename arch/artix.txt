@@ -83,3 +83,4 @@ unrar
 unzip
 tar
 libexif
+texlive-bin
