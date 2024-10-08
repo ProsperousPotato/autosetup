@@ -43,7 +43,6 @@ artix_add_arch_repos() {
 
 install_yay() {
     ls /bin | grep -iq yay || {
-    read -p "Installing yay. [Press enter to continue] " continue
     su $username -c "\
     git clone https://aur.archlinux.org/yay-bin.git /home/$username/yay && \
     chmod a+w /home/$username/yay && \
@@ -157,7 +156,7 @@ get_gitrepos() {
     git clone --quiet https://github.com/ProsperousPotato/dwm && cd dwm && make clean install && cd ..
     git clone --quiet https://github.com/ProsperousPotato/dmenu && cd dmenu && make clean install && cd ..
     git clone --quiet https://github.com/ProsperousPotato/st && cd st && make clean install && cd ..
-    git clone --quiet https://github.com/ProsperousPotato/nsxiv && cd nsxiv/nsxiv && make clean install && cd ../..
+    git clone --quiet https://github.com/ProsperousPotato/nsxiv && cd nsxiv && make clean install && cd ..
     git clone --quiet https://github.com/ProsperousPotato/slstatus && cd slstatus && make clean install && cd ..
     git clone --quiet https://github.com/ProsperousPotato/slock && cd slock && cp -f config.def.h config.h && make clean install
     cd $sdir 
