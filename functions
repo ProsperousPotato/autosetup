@@ -147,7 +147,7 @@ get_dots() {
     chmod -x local/bin/bookmarksfile
     chmod +x config/lf/cleaner
     chmod +x config/lf/scope
-    mv -f config /home/$username/.config ; mv -f local /home/$username/.local ; mkdir /home/$username/.local/src
+    mv -f qemu /home/$username/qemu ; chmod +x /home/$username/qemu/qemu* ; mv -f config /home/$username/.config ; mv -f local /home/$username/.local ; mkdir /home/$username/.local/src
     cd .. && rm -rf dotfiles
 }
 
