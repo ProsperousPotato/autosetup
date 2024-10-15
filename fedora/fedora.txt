@@ -107,7 +107,6 @@ texlive-collection-fontsextra
 texlive
 zathura-pdf-poppler
 qemu
-
 feh
 libqalculate
 pcmanfm
